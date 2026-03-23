@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NEXUS — AI Executive Agent Network</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+
+:root {
+–bg: #080c10;
+–surface: #0d1117;
+–border: #1a2332;
+–accent: #00d4ff;
+–accent2: #7c3aed;
+–gold: #f59e0b;
+–text: #e2e8f0;
+–muted: #4a5568;
+–green: #10b981;
+–red: #ef4444;
+}
+
+- { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+background: var(–bg);
+color: var(–text);
+font-family: ‘DM Mono’, monospace;
+min-height: 100vh;
+overflow-x: hidden;
+}
+
+/* Animated grid background */
+body::before {
+content: ‘’;
+position: fixed;
+inset: 0;
+background-image:
+linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+background-size: 40px 40px;
+pointer-events: none;
+z-index: 0;
+}
+
+.container {
+max-width: 1100px;
+margin: 0 auto;
+padding: 0 24px;
+position: relative;
+z-index: 1;
+}
+
+/* HEADER */
+header {
+padding: 32px 0 24px;
+border-bottom: 1px solid var(–border);
+margin-bottom: 40px;
+}
+
+.header-inner {
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+
+.logo {
+font-family: ‘Syne’, sans-serif;
+font-weight: 800;
+font-size: 1.6rem;
+letter-spacing: 0.15em;
+color: var(–accent);
+text-shadow: 0 0 30px rgba(0,212,255,0.4);
+}
+
+.logo span { color: var(–text); }
+
+.status-pill {
+display: flex;
+align-items: center;
+gap: 8px;
+font-size: 0.7rem;
+letter-spacing: 0.1em;
+color: var(–green);
+border: 1px solid rgba(16,185,129,0.3);
+padding: 6px 14px;
+border-radius: 20px;
+background: rgba(16,185,129,0.05);
+}
+
+.dot {
+width: 6px; height: 6px;
+border-radius: 50%;
+background: var(–green);
+animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+0%, 100% { opacity: 1; transform: scale(1); }
+50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* SECTION TITLES */
+.section-label {
+font-size: 0.65rem;
+letter-spacing: 0.2em;
+color: var(–muted);
+text-transform: uppercase;
+margin-bottom: 12px;
+}
+
+h2 {
+font-family: ‘Syne’, sans-serif;
+font-size: 1.1rem;
+font-weight: 700;
+color: var(–text);
+margin-bottom: 20px;
+}
+
+/* CARDS */
+.card {
+background: var(–surface);
+border: 1px solid var(–border);
+border-radius: 12px;
+padding: 24px;
+position: relative;
+overflow: hidden;
+}
+
+.card::before {
+content: ‘’;
+position: absolute;
+top: 0; left: 0; right: 0;
+height: 1px;
+background: linear-gradient(90deg, transparent, var(–accent), transparent);
+opacity: 0.3;
+}
+
+/* TWO COLUMN LAYOUT */
+.two-col {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 20px;
+margin-bottom: 20px;
+}
+
+@media (max-width: 700px) {
+.two-col { grid-template-columns: 1fr; }
+}
+
+/* AGENT PANELS */
+.agent-panel {
+border-radius: 12px;
+padding: 20px;
+border: 1px solid var(–border);
+background: var(–surface);
+}
+
+.agent-header {
+display: flex;
+align-items: center;
+gap: 12px;
+margin-bottom: 16px;
+}
+
+.agent-icon {
+width: 40px; height: 40px;
+border-radius: 10px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 1.2rem;
+flex-shrink: 0;
+}
+
+.agent-icon.sender { background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.3); }
+.agent-icon.receiver { background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.3); }
+
+.agent-name {
+font-family: ‘Syne’, sans-serif;
+font-weight: 700;
+font-size: 0.95rem;
+}
+
+.agent-role {
+font-size: 0.65rem;
+color: var(–muted);
+letter-spacing: 0.05em;
+}
+
+/* FORM ELEMENTS */
+label {
+display: block;
+font-size: 0.65rem;
+letter-spacing: 0.1em;
+color: var(–muted);
+margin-bottom: 6px;
+text-transform: uppercase;
+}
+
+input, textarea, select {
+width: 100%;
+background: rgba(255,255,255,0.03);
+border: 1px solid var(–border);
+border-radius: 8px;
+color: var(–text);
+font-family: ‘DM Mono’, monospace;
+font-size: 0.78rem;
+padding: 10px 14px;
+outline: none;
+transition: border-color 0.2s;
+margin-bottom: 14px;
+}
+
+input:focus, textarea:focus, select:focus {
+border-color: var(–accent);
+box-shadow: 0 0 0 2px rgba(0,212,255,0.1);
+}
+
+textarea { resize: vertical; min-height: 80px; }
+
+select option { background: #0d1117; }
+
+/* TAGS */
+.tags {
+display: flex;
+flex-wrap: wrap;
+gap: 6px;
+margin-bottom: 14px;
+}
+
+.tag {
+font-size: 0.65rem;
+padding: 4px 10px;
+border-radius: 20px;
+border: 1px solid var(–border);
+color: var(–muted);
+cursor: pointer;
+transition: all 0.15s;
+letter-spacing: 0.05em;
+}
+
+.tag.active {
+border-color: var(–accent);
+color: var(–accent);
+background: rgba(0,212,255,0.08);
+}
+
+.tag.active.purple {
+border-color: var(–accent2);
+color: var(–accent2);
+background: rgba(124,58,237,0.08);
+}
+
+/* MATCH BUTTON */
+.match-btn {
+width: 100%;
+padding: 16px;
+background: linear-gradient(135deg, var(–accent), var(–accent2));
+border: none;
+border-radius: 10px;
+color: #fff;
+font-family: ‘Syne’, sans-serif;
+font-weight: 700;
+font-size: 0.9rem;
+letter-spacing: 0.1em;
+cursor: pointer;
+transition: all 0.2s;
+margin-bottom: 20px;
+position: relative;
+overflow: hidden;
+}
+
+.match-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(0,212,255,0.25); }
+.match-btn:active { transform: translateY(0); }
+.match-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.match-btn::after {
+content: ‘’;
+position: absolute;
+inset: 0;
+background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.1));
+}
+
+/* COMMS LOG */
+.comms-log {
+background: #050810;
+border: 1px solid var(–border);
+border-radius: 10px;
+padding: 16px;
+min-height: 140px;
+font-size: 0.72rem;
+line-height: 1.8;
+margin-bottom: 20px;
+overflow-y: auto;
+max-height: 200px;
+}
+
+.log-line { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 4px; }
+.log-time { color: var(–muted); flex-shrink: 0; }
+.log-agent { flex-shrink: 0; font-weight: 500; }
+.log-agent.a1 { color: var(–accent); }
+.log-agent.a2 { color: var(–accent2); }
+.log-agent.sys { color: var(–gold); }
+.log-msg { color: #8899aa; }
+
+/* RESULT PANEL */
+.result-panel {
+display: none;
+background: var(–surface);
+border-radius: 12px;
+padding: 24px;
+border: 1px solid var(–border);
+animation: fadeUp 0.4s ease;
+}
+
+.result-panel.visible { display: block; }
+
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(16px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.match-score-row {
+display: flex;
+align-items: center;
+gap: 20px;
+margin-bottom: 24px;
+flex-wrap: wrap;
+}
+
+.score-circle {
+width: 80px; height: 80px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+flex-direction: column;
+border: 3px solid var(–accent);
+box-shadow: 0 0 20px rgba(0,212,255,0.2);
+flex-shrink: 0;
+}
+
+.score-num {
+font-family: ‘Syne’, sans-serif;
+font-weight: 800;
+font-size: 1.4rem;
+color: var(–accent);
+line-height: 1;
+}
+
+.score-label { font-size: 0.55rem; color: var(–muted); letter-spacing: 0.1em; margin-top: 2px; }
+
+.score-details { flex: 1; }
+
+.score-details h3 {
+font-family: ‘Syne’, sans-serif;
+font-size: 1rem;
+margin-bottom: 6px;
+}
+
+.score-details p { font-size: 0.75rem; color: #8899aa; line-height: 1.6; }
+
+.escalate-badge {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+padding: 6px 14px;
+border-radius: 20px;
+font-size: 0.68rem;
+font-weight: 500;
+letter-spacing: 0.05em;
+margin-bottom: 20px;
+}
+
+.escalate-badge.yes { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.4); color: var(–green); }
+.escalate-badge.no { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.4); color: var(–red); }
+
+.ai-response {
+background: rgba(0,0,0,0.3);
+border-left: 2px solid var(–accent2);
+padding: 16px;
+border-radius: 0 8px 8px 0;
+font-size: 0.75rem;
+line-height: 1.8;
+color: #a0aec0;
+white-space: pre-wrap;
+}
+
+.divider {
+height: 1px;
+background: var(–border);
+margin: 20px 0;
+}
+
+/* LOADING */
+.loading-dots span {
+animation: blink 1.2s infinite;
+font-size: 1.2rem;
+color: var(–accent);
+}
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+0%, 100% { opacity: 0.2; }
+50% { opacity: 1; }
+}
+
+.hidden { display: none; }
+
+/* FOOTER */
+footer {
+margin-top: 60px;
+padding: 24px 0;
+border-top: 1px solid var(–border);
+text-align: center;
+font-size: 0.65rem;
+color: var(–muted);
+letter-spacing: 0.1em;
+}
+
+.github-note {
+margin-top: 8px;
+font-size: 0.65rem;
+color: #2d3748;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="header-inner">
+      <div class="logo">NEX<span>US</span></div>
+      <div class="status-pill">
+        <div class="dot"></div>
+        AGENT NETWORK ONLINE
+      </div>
+    </div>
+    <div style="margin-top:10px; font-size:0.7rem; color:var(--muted); letter-spacing:0.05em;">
+      AI-to-AI Executive Opportunity Matching Protocol — Proof of Concept v0.1
+    </div>
+  </header>
+
+  <!-- AGENT SETUP -->
+
+  <div class="section-label">// CONFIGURE AGENTS</div>
+
+  <div class="two-col">
+
+```
+<!-- SENDER AGENT -->
+<div class="agent-panel">
+  <div class="agent-header">
+    <div class="agent-icon sender">📡</div>
+    <div>
+      <div class="agent-name" style="color:var(--accent)">AGENT ALPHA</div>
+      <div class="agent-role">OPPORTUNITY HOLDER</div>
+    </div>
+  </div>
+
+  <label>Your Name / Company</label>
+  <input type="text" id="senderName" placeholder="e.g. Marco — SolarNode Technologies" value="Marco — SolarNode Technologies" />
+
+  <label>Opportunity Title</label>
+  <input type="text" id="oppTitle" placeholder="e.g. SolarNode AI Compute Patent" value="SolarNode AI Compute Patent" />
+
+  <label>Brief Description</label>
+  <textarea id="oppDesc" placeholder="Describe your opportunity...">Plug-and-play hardware integrating solar inverters, battery storage, and compute servers into decentralized AI compute nodes leased via blockchain. USPTO provisional patent filed. Seeking acquirer or strategic partner.</textarea>
+
+  <label>Sector Tags</label>
+  <div class="tags" id="senderTags">
+    <div class="tag active" onclick="toggleTag(this)">AI Infrastructure</div>
+    <div class="tag active" onclick="toggleTag(this)">CleanTech</div>
+    <div class="tag active" onclick="toggleTag(this)">Blockchain</div>
+    <div class="tag" onclick="toggleTag(this)">SaaS</div>
+    <div class="tag" onclick="toggleTag(this)">Hardware</div>
+    <div class="tag" onclick="toggleTag(this)">Energy</div>
+  </div>
+
+  <label>Deal Type</label>
+  <select id="dealType">
+    <option value="acquisition">Full Acquisition</option>
+    <option value="partnership">Strategic Partnership</option>
+    <option value="investment">Investment / Funding</option>
+    <option value="licensing">IP Licensing</option>
+  </select>
+</div>
+
+<!-- RECEIVER AGENT -->
+<div class="agent-panel">
+  <div class="agent-header">
+    <div class="agent-icon receiver">🛡️</div>
+    <div>
+      <div class="agent-name" style="color:var(--accent2)">AGENT BETA</div>
+      <div class="agent-role">EXECUTIVE SCREENER</div>
+    </div>
+  </div>
+
+  <label>Executive / Company</label>
+  <input type="text" id="receiverName" placeholder="e.g. Jensen Huang — NVIDIA" value="Jensen Huang — NVIDIA" />
+
+  <label>Strategic Priorities</label>
+  <textarea id="receiverPriorities" placeholder="What is this executive focused on?">Expanding AI infrastructure and compute capacity globally. Interested in decentralized compute, energy-efficient AI hardware, and blockchain-integrated GPU networks.</textarea>
+
+  <label>Interest Areas</label>
+  <div class="tags" id="receiverTags">
+    <div class="tag active purple" onclick="toggleTag(this, true)">AI Infrastructure</div>
+    <div class="tag active purple" onclick="toggleTag(this, true)">GPU Computing</div>
+    <div class="tag active purple" onclick="toggleTag(this, true)">Energy Efficiency</div>
+    <div class="tag purple" onclick="toggleTag(this, true)">SaaS</div>
+    <div class="tag purple" onclick="toggleTag(this, true)">Blockchain</div>
+    <div class="tag purple" onclick="toggleTag(this, true)">Hardware</div>
+  </div>
+
+  <label>Minimum Deal Size</label>
+  <select id="minDeal">
+    <option value="any">Any</option>
+    <option value="1m">$1M+</option>
+    <option value="10m">$10M+</option>
+    <option value="50m" selected>$50M+</option>
+    <option value="100m">$100M+</option>
+  </select>
+</div>
+```
+
+  </div>
+
+  <!-- MATCH BUTTON -->
+
+  <button class="match-btn" id="matchBtn" onclick="runMatch()">
+    ⚡ INITIATE AGENT-TO-AGENT HANDSHAKE
+  </button>
+
+  <!-- COMMS LOG -->
+
+  <div class="section-label">// LIVE AGENT COMMUNICATION LOG</div>
+  <div class="comms-log" id="commsLog">
+    <div class="log-line">
+      <span class="log-time">00:00:00</span>
+      <span class="log-agent sys">SYS</span>
+      <span class="log-msg">NEXUS protocol initialized. Awaiting agent handshake...</span>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+
+  <div class="result-panel" id="resultPanel">
+    <div class="section-label">// MATCH ANALYSIS RESULT</div>
+
+```
+<div class="match-score-row">
+  <div class="score-circle">
+    <div class="score-num" id="scoreNum">—</div>
+    <div class="score-label">MATCH</div>
+  </div>
+  <div class="score-details">
+    <h3 id="scoreTitle">Analyzing...</h3>
+    <p id="scoreDesc"></p>
+  </div>
+</div>
+
+<div id="escalateBadge"></div>
+
+<div class="divider"></div>
+
+<div class="section-label">// AGENT BETA EVALUATION REPORT</div>
+<div class="ai-response" id="aiResponse">
+  <span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>
+</div>
+```
+
+  </div>
+
+  <footer>
+    NEXUS — AI Executive Agent Network &nbsp;|&nbsp; Proof of Concept v0.1
+    <div class="github-note">
+      Open source framework · Demo mode — no API key required · github.com/SmitMarcos/Nexus-agent-network
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  function toggleTag(el, purple = false) {
+    el.classList.toggle('active');
+    if (purple) el.classList.toggle('purple');
+  }
+
+  function getActiveTags(containerId) {
+    return [...document.querySelectorAll(`#${containerId} .tag.active`)]
+      .map(t => t.textContent.trim());
+  }
+
+  function addLog(agent, msg, cls = 'sys') {
+    const log = document.getElementById('commsLog');
+    const now = new Date();
+    const time = now.toTimeString().split(' ')[0];
+    const line = document.createElement('div');
+    line.className = 'log-line';
+    line.innerHTML = `
+      <span class="log-time">${time}</span>
+      <span class="log-agent ${cls}">${agent}</span>
+      <span class="log-msg">${msg}</span>
+    `;
+    log.appendChild(line);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+  async function runMatch() {
+    const btn = document.getElementById('matchBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ HANDSHAKE IN PROGRESS...';
+
+    // Clear log
+    document.getElementById('commsLog').innerHTML = '';
+    document.getElementById('resultPanel').classList.remove('visible');
+
+    // Gather inputs
+    const senderName = document.getElementById('senderName').value;
+    const oppTitle = document.getElementById('oppTitle').value;
+    const oppDesc = document.getElementById('oppDesc').value;
+    const senderTags = getActiveTags('senderTags');
+    const dealType = document.getElementById('dealType').value;
+
+    const receiverName = document.getElementById('receiverName').value;
+    const receiverPriorities = document.getElementById('receiverPriorities').value;
+    const receiverTags = getActiveTags('receiverTags');
+    const minDeal = document.getElementById('minDeal').value;
+
+    // Simulate agent handshake
+    addLog('SYS', 'Initiating NEXUS agent-to-agent protocol...', 'sys');
+    await sleep(600);
+    addLog('ALPHA', `Identity broadcast: ${senderName}`, 'a1');
+    await sleep(500);
+    addLog('BETA', `Identity confirmed: ${receiverName} screener online`, 'a2');
+    await sleep(600);
+    addLog('ALPHA', `Transmitting opportunity profile: "${oppTitle}"`, 'a1');
+    await sleep(500);
+    addLog('ALPHA', `Sector tags: [${senderTags.join(', ')}] · Deal type: ${dealType}`, 'a1');
+    await sleep(700);
+    addLog('BETA', `Profile received. Cross-referencing with principal mandate...`, 'a2');
+    await sleep(800);
+    addLog('BETA', `Interest matrix: [${receiverTags.join(', ')}]`, 'a2');
+    await sleep(600);
+    addLog('SYS', 'Routing to AI evaluation engine...', 'sys');
+    await sleep(400);
+
+    // Show result panel with loading state
+    document.getElementById('resultPanel').classList.add('visible');
+    document.getElementById('scoreNum').textContent = '...';
+    document.getElementById('scoreTitle').textContent = 'Evaluating match...';
+    document.getElementById('scoreDesc').textContent = '';
+    document.getElementById('escalateBadge').innerHTML = '';
+    document.getElementById('aiResponse').innerHTML = '<span class="loading-dots"><span>.</span><span>.</span><span>.</span></span>';
+
+    // ── SIMULATED EVALUATION ENGINE (no API key required) ──────────────────
+    // Scores based on real tag overlap, keyword matching, and deal logic.
+    // Replace this block with a live API call when you're ready to upgrade.
+
+    await sleep(1200); // simulate processing time
+
+    function scoreMatch(senderTags, receiverTags, oppDesc, receiverPriorities, dealType, minDeal) {
+      // 1. Tag overlap score (0-40)
+      const sLower = senderTags.map(t => t.toLowerCase());
+      const rLower = receiverTags.map(t => t.toLowerCase());
+      const overlap = sLower.filter(t => rLower.some(r => r.includes(t) || t.includes(r))).length;
+      const maxTags = Math.max(sLower.length, rLower.length, 1);
+      const tagScore = Math.round((overlap / maxTags) * 40);
+
+      // 2. Keyword alignment score (0-35)
+      const allText = (oppDesc + ' ' + receiverPriorities).toLowerCase();
+      const keywords = [
+        ['ai','artificial intelligence','machine learning','compute','neural'],
+        ['energy','solar','battery','clean','renewable','power'],
+        ['blockchain','decentralized','crypto','token','distributed'],
+        ['hardware','device','chip','server','infrastructure'],
+        ['software','saas','platform','app','cloud'],
+        ['patent','ip','invention','proprietary','technology'],
+        ['mining','resources','commodities','extraction'],
+        ['security','protection','defence','surveillance'],
+        ['finance','trading','investment','fund','capital'],
+      ];
+      let kwHits = 0;
+      keywords.forEach(group => {
+        const inOpp = group.some(k => oppDesc.toLowerCase().includes(k));
+        const inPrincipal = group.some(k => receiverPriorities.toLowerCase().includes(k));
+        if (inOpp && inPrincipal) kwHits++;
+      });
+      const kwScore = Math.min(Math.round(kwHits * 7), 35);
+
+      // 3. Deal type fit (0-15)
+      const dealScores = { acquisition: 15, partnership: 12, investment: 10, licensing: 8 };
+      const dealScore = dealScores[dealType] || 8;
+
+      // 4. Deal size penalty (0 or -10)
+      const sizePenalty = (minDeal === '100m') ? -10 : (minDeal === '50m') ? -5 : 0;
+
+      const raw = tagScore + kwScore + dealScore + sizePenalty;
+      return Math.max(5, Math.min(98, raw));
+    }
+
+    function generateReport(score, senderName, oppTitle, receiverName, senderTags, receiverTags, dealType, oppDesc) {
+      const overlap = senderTags.filter(t =>
+        receiverTags.some(r => r.toLowerCase().includes(t.toLowerCase()) || t.toLowerCase().includes(r.toLowerCase()))
+      );
+
+      const escalate = score >= 60;
+
+      let title, summary, report;
+
+      if (score >= 80) {
+        title = `Strong strategic alignment — high-priority opportunity`;
+        summary = `Tag overlap and mandate alignment indicate this fits ${receiverName.split('—')[0].trim()}'s current focus areas.`;
+        report = `AGENT BETA EVALUATION — ${new Date().toISOString().split('T')[0]}\n\n` +
+          `Opportunity "${oppTitle}" from ${senderName} scores ${score}/100 against principal mandate. ` +
+          `Sector alignment is strong across [${overlap.join(', ') || senderTags[0]}], which directly maps to principal's stated priorities. ` +
+          `Deal structure (${dealType}) is appropriate and actionable. ` +
+          `Recommend scheduling a 20-minute briefing — this merits direct attention.`;
+      } else if (score >= 60) {
+        title = `Moderate alignment — conditional escalation`;
+        summary = `Partial overlap with principal mandate; worth a brief review with caveats.`;
+        report = `AGENT BETA EVALUATION — ${new Date().toISOString().split('T')[0]}\n\n` +
+          `Opportunity "${oppTitle}" scores ${score}/100. ` +
+          `There is meaningful overlap in [${overlap.join(', ') || senderTags[0]}] but alignment is not complete across all mandate criteria. ` +
+          `The ${dealType} structure may require adaptation to fit principal's preferred engagement model. ` +
+          `Escalating with low urgency — suggest principal reviews summary brief before committing time.`;
+      } else if (score >= 35) {
+        title = `Weak alignment — not escalating at this time`;
+        summary = `Insufficient overlap with principal mandate to warrant executive attention.`;
+        report = `AGENT BETA EVALUATION — ${new Date().toISOString().split('T')[0]}\n\n` +
+          `Opportunity "${oppTitle}" scores ${score}/100 — below escalation threshold. ` +
+          `While there is some surface-level relevance, the core opportunity does not align closely enough with principal's active priorities: [${receiverTags.slice(0,2).join(', ')}]. ` +
+          `Filing for quarterly review. ` +
+          `Agent Alpha may resubmit if deal structure or terms change materially.`;
+      } else {
+        title = `No meaningful alignment — opportunity declined`;
+        summary = `Opportunity profile does not match principal mandate on any significant dimension.`;
+        report = `AGENT BETA EVALUATION — ${new Date().toISOString().split('T')[0]}\n\n` +
+          `Opportunity "${oppTitle}" scores ${score}/100 — well below threshold. ` +
+          `Sector tags [${senderTags.join(', ')}] show minimal overlap with principal focus areas [${receiverTags.join(', ')}]. ` +
+          `No escalation recommended. ` +
+          `Opportunity archived. Agent Alpha notified of mismatch to enable better targeting.`;
+      }
+
+      return { score, escalate, title, summary, report };
+    }
+
+    const score = scoreMatch(senderTags, receiverTags, oppDesc, receiverPriorities, dealType, minDeal);
+    const result = generateReport(score, senderName, oppTitle, receiverName, senderTags, receiverTags, dealType, oppDesc);
+
+    // Update log
+    await sleep(300);
+    addLog('BETA', `Evaluation complete. Score: ${result.score}/100`, 'a2');
+    await sleep(400);
+    addLog('BETA', `Escalation decision: ${result.escalate ? '✅ ESCALATE TO PRINCIPAL' : '❌ DO NOT ESCALATE'}`, 'a2');
+    await sleep(300);
+    addLog('SYS', 'Match analysis delivered. [DEMO MODE — no API key required]', 'sys');
+
+    // Update UI
+    const scoreEl = document.getElementById('scoreNum');
+    scoreEl.textContent = result.score;
+
+    const circle = scoreEl.closest('.score-circle');
+    if (result.score >= 75) {
+      circle.style.borderColor = 'var(--green)';
+      scoreEl.style.color = 'var(--green)';
+      circle.style.boxShadow = '0 0 20px rgba(16,185,129,0.3)';
+    } else if (result.score >= 45) {
+      circle.style.borderColor = 'var(--gold)';
+      scoreEl.style.color = 'var(--gold)';
+      circle.style.boxShadow = '0 0 20px rgba(245,158,11,0.3)';
+    } else {
+      circle.style.borderColor = 'var(--red)';
+      scoreEl.style.color = 'var(--red)';
+      circle.style.boxShadow = '0 0 20px rgba(239,68,68,0.2)';
+    }
+
+    document.getElementById('scoreTitle').textContent = result.title;
+    document.getElementById('scoreDesc').textContent = result.summary;
+
+    document.getElementById('escalateBadge').innerHTML = result.escalate
+      ? '<div class="escalate-badge yes">✅ ESCALATING TO PRINCIPAL — opportunity flagged for executive review</div>'
+      : '<div class="escalate-badge no">❌ NOT ESCALATING — does not meet principal mandate threshold</div>';
+
+    document.getElementById('aiResponse').textContent = result.report;
+
+    btn.disabled = false;
+    btn.textContent = '⚡ INITIATE AGENT-TO-AGENT HANDSHAKE';
+  }
+</script>
+
+</body>
+</html>
