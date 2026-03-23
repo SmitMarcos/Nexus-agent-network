@@ -1,0 +1,115 @@
+# NEXUS — AI Executive Agent Network
+
+> A proof-of-concept for AI-to-AI opportunity matching between executive agents.
+
+![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Status](https://img.shields.io/badge/status-proof--of--concept-orange)
+
+## The Concept
+
+Imagine every executive had a personal AI assistant that already knew their strategic priorities, deal preferences, and mandate. Now imagine those AI assistants could talk to each other — screening, matching, and evaluating opportunities at machine speed — and only escalating to the human when something genuinely warrants their attention.
+
+That’s NEXUS.
+
+No more cold emails lost in inboxes. No more great opportunities buried under noise. AI agents negotiate the first filter, humans close the deal.
+
+-----
+
+## How It Works
+
+```
+[Opportunity Holder] ──► AGENT ALPHA ──► NEXUS Protocol ──► AGENT BETA ──► [Executive]
+        │                   │                  │                  │               │
+   Inputs their          Broadcasts         Agent-to-agent     Screens against   Sees only
+   opportunity           profile            handshake          principal         high-match
+   details                                  & evaluation       mandate           opportunities
+```
+
+1. **Agent Alpha** represents the opportunity holder — broadcasts deal profile, sector tags, and deal type
+1. **Agent Beta** represents the receiving executive — screens against their strategic mandate
+1. **Match Score** is generated (0–100) with escalation decision
+1. **Escalation** — only high-match opportunities reach the human
+
+-----
+
+## Demo
+
+The `/demo` folder contains a standalone HTML demo you can open in any browser. It uses the Claude API to power real AI evaluation.
+
+### Quick Start
+
+1. Clone this repo
+   
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/nexus-agent-network.git
+   cd nexus-agent-network
+   ```
+1. Open `demo/index.html` in your browser
+1. Add your Claude API key in `config.js` (see setup below)
+1. Configure both agents and click **INITIATE AGENT-TO-AGENT HANDSHAKE**
+
+-----
+
+## Project Structure
+
+```
+nexus-agent-network/
+├── demo/
+│   └── index.html          # Standalone browser demo
+├── core/
+│   ├── agent.py            # Base Agent class
+│   ├── alpha.py            # Opportunity Holder agent
+│   ├── beta.py             # Executive Screener agent  
+│   └── protocol.py         # Agent-to-agent communication protocol
+├── config.js               # API keys and config (not committed)
+├── config.example.js       # Example config template
+├── README.md
+└── LICENSE
+```
+
+-----
+
+## Roadmap
+
+- [x] Proof of concept — single agent pair, browser demo
+- [ ] Multi-agent network — multiple Beta agents, parallel screening
+- [ ] Trust/verification layer — prevent spam agents
+- [ ] Persistent agent profiles — agents remember past interactions
+- [ ] MCP integration — plug into Anthropic’s Model Context Protocol
+- [ ] A2A protocol support — Google’s Agent-to-Agent standard
+- [ ] REST API — deploy your own agent node
+- [ ] Agent registry — discover and connect with other agents
+
+-----
+
+## Tech Stack
+
+- **AI Engine**: Claude API (Anthropic) / OpenAI API
+- **Agent Framework**: Python (core), vanilla JS (demo)
+- **Protocol**: Custom JSON schema over HTTPS (v0.1)
+- **Future**: MCP / Google A2A for standardized agent communication
+
+-----
+
+## The Bigger Vision
+
+This is v0.1 of what could become a global business intelligence layer. Every company deploys an agent node. Opportunity profiles flow through the network. Matches surface automatically. The right deals reach the right people.
+
+The infrastructure is being built right now by Anthropic (MCP) and Google (A2A). NEXUS is the business logic layer on top.
+
+-----
+
+## Contributing
+
+This is an early-stage open source project. Ideas, PRs, and forks welcome.
+
+-----
+
+## License
+
+MIT — build freely, attribute kindly.
+
+-----
+
+*NEXUS was conceived by Marco, a Senior CPO and entrepreneur based in Southern Africa, as a solution to the fundamental problem of great opportunities never reaching the right people.*
